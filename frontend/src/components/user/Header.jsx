@@ -41,12 +41,12 @@ const Header = () => {
                         </span>
                     </Link>
 
-                    <button className="relative flex h-10 w-10 items-center justify-center rounded-lg hover:bg-gray-100 transition-colors">
+                    <Link to='/user/liked-products' className="relative flex h-10 w-10 items-center justify-center rounded-lg hover:bg-gray-100 transition-colors">
                         <Heart className="h-5 w-5 text-gray-700" />
                         <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-gray-900 text-[10px] font-medium text-white">
                             0
                         </span>
-                    </button>
+                    </Link>
 
                     {/* Sign In Button */}
                     {!isSignedIn && <SignInButton mode="modal" asChild>
