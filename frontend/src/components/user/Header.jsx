@@ -57,11 +57,6 @@ const Header = () => {
 
                     {isSignedIn && <div className="flex items-center gap-2 ">
                         <UserButton />
-                        <SignOutButton mode="modal" asChild>
-                            <button className="cursor-pointer h-8 px-2 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition-colors">
-                                Đăng xuất
-                            </button>
-                        </SignOutButton>
                     </div>
                     }
                 </div>

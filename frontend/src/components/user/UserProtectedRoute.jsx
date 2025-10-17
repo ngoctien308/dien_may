@@ -7,9 +7,7 @@ const UserProtectedRoute = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if(isSignedIn) {
-      navigate('/user/home');
-    } else if(!isSignedIn)
+    if (!isSignedIn)
       navigate('/user/signin');
   }, [isSignedIn])
 
