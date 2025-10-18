@@ -3,7 +3,7 @@ import { Heart, ShoppingCart } from "lucide-react"
 import { Link } from "react-router-dom"
 
 export default function ProductCard({ product }) {
-  const [isLiked, setIsLiked] = useState(false)
+  const [isLiked, setIsLiked] = useState(false);
 
   const toggleLike = () => {
     setIsLiked(!isLiked)
@@ -17,8 +17,6 @@ export default function ProductCard({ product }) {
   }
 
   const handleAddToCart = () => {
-    console.log("[v0] Added to cart:", product.name)
-    // Add your cart logic here
   }
 
   return (
@@ -26,14 +24,14 @@ export default function ProductCard({ product }) {
       {/* Product Image */}
       <div className="relative aspect-square overflow-hidden bg-gray-100">
         <img
-          src={product.images[0] || "/placeholder.svg"}
-          alt={product.name}
+          src={product.image1}
+          alt={product.product_name}
           className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
         />
 
         {/* Discount Badge */}
-        {product.discount !== 0 && <div className="absolute left-2 top-2 rounded-md bg-red-500 px-2 py-1 text-xs font-semibold text-white">
-          {`-${product.discount}%`}
+        {product.product_discount !== 0 && <div className="absolute left-2 top-2 rounded-md bg-red-500 px-2 py-1 text-xs font-semibold text-white">
+          {`-${product.product_discount}%`}
         </div>}
 
         {/* Action Buttons - Heart & Cart */}
@@ -57,22 +55,22 @@ export default function ProductCard({ product }) {
 
       {/* Product Info */}
       <div className="p-4">
-        <h3 className="mb-2 line-clamp-2 text-sm font-extralight uppercase text-gray-900">{product.name}</h3>
+        <h3 className="mb-2 line-clamp-2 text-sm font-extralight uppercase text-gray-900">{product.product_name}</h3>
 
         <div className="mb-3 flex items-center gap-2">
-          {product.discount == 0 && <span className="font-bold text-gray-900">{formatPrice(product.price)}</span>}
-          {product.discount !== 0 && (
+          {product.product_discount == 0 && <span className="font-bold text-gray-900">{formatPrice(product.product_price)}</span>}
+          {product.product_discount !== 0 && (
             <span className="font-bold text-gray-900">
-              {formatPrice(product.price - (product.price * product.discount) / 100)}
+              {formatPrice(product.product_price - (product.product_price * product.product_discount) / 100)}
             </span>
           )}
-          {product.discount !== 0 && (
-            <span className="text-sm text-gray-500 line-through">{formatPrice(product.price)}</span>
+          {product.product_discount !== 0 && (
+            <span className="text-sm text-gray-500 line-through">{formatPrice(product.product_price)}</span>
           )}
         </div>
 
         <Link
-          to={`/user/products/${product.id}`}
+          to={`/user/products/${product.product_id}`}
           className="w-full rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-800 cursor-pointer"
         >
           Xem chi tiết

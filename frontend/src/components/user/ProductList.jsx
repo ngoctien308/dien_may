@@ -1,7 +1,18 @@
-import { sampleProducts } from "../../mock-data"
+import { useEffect, useState } from "react"
 import ProductCard from "./ProductCard"
+import axios from "axios"
 
 export default function ProductList() {
+    const [products, setProducts] = useState([]);
+
+    useEffect(() => {
+        const fetchProducts = async () => {
+            const res = await axios.get('http://localhost:3000/api/products');
+            setProducts(res.data.products);
+        }
+
+        fetchProducts();
+    }, []);
 
     return (
         <div className="container mx-auto px-10 py-8">
@@ -11,8 +22,8 @@ export default function ProductList() {
             </div>
 
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-                {sampleProducts.map((product) => (
-                    <ProductCard key={product.id} product={product} />
+                {products.map((product) => (
+                    <ProductCard key={product.product_id} product={product} />
                 ))}
             </div>
         </div>

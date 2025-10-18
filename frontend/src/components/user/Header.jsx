@@ -1,11 +1,10 @@
-import { SignInButton, SignOutButton, useAuth, UserButton } from "@clerk/clerk-react"
+import { SignInButton, useAuth, UserButton } from "@clerk/clerk-react"
 import { Heart, Search, ShoppingCart } from "lucide-react"
-import {Link} from 'react-router-dom'
+import { Link } from 'react-router-dom'
 
 const Header = () => {
-    const { isSignedIn } = useAuth();
+    const { isSignedIn, userId } = useAuth();
     const categories = ["Điện thoại", "Laptop", "Tablet", "Phụ kiện", "Âm thanh"];
-
     return (
         <header className="sticky top-0 z-50 w-full border-b border-gray-200 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
             <div className="container mx-auto flex h-16 items-center justify-between px-10 md:px-6">
