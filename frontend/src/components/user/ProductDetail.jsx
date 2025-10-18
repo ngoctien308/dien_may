@@ -5,6 +5,7 @@ import Footer from "./Footer"
 import { reviews } from "../../mock-data"
 import axios from "axios"
 import { useParams } from "react-router-dom"
+import { formatPrice } from "../../utils/functions"
 
 export default function ProductDetailPage() {
   const [product, setProduct] = useState([]);
@@ -14,14 +15,7 @@ export default function ProductDetailPage() {
   const [quantity, setQuantity] = useState(1)
   const [isLiked, setIsLiked] = useState(false);
   const [activeTab, setActiveTab] = useState("details");
-  const [selectedVersion, setSelectedVersion] = useState(0);
-
-  const formatPrice = (price) => {
-    return new Intl.NumberFormat("vi-VN", {
-      style: "currency",
-      currency: "VND",
-    }).format(price)
-  }
+  const [selectedVersion, setSelectedVersion] = useState(0);  
 
   const handleChangeVersion = (version_id) => {
     setSelectedVersion(version_id);

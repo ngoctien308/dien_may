@@ -4,6 +4,7 @@ import { useState } from "react"
 import { Link } from "react-router-dom"
 import { Heart, ShoppingCart, Trash2 } from "lucide-react"
 import Header from "./Header"
+import { formatPrice } from "../../utils/functions"
 
 export default function LikedProducts() {
     const [likedItems, setLikedItems] = useState([
@@ -27,10 +28,6 @@ export default function LikedProducts() {
 
     const removeFromLiked = (id) => {
         setLikedItems(likedItems.filter((item) => item.id !== id))
-    }
-
-    const formatPrice = (price) => {
-        return new Intl.NumberFormat("vi-VN").format(price)
     }
 
     const calculateDiscount = (original, current) => {

@@ -1,11 +1,12 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
 import SignIn from './components/user/SignIn'
 import Home from './components/user/Home'
-import AdminSignIn from './components/admin/AdminSignIn'
 import ProductDetail from './components/user/ProductDetail'
 import Cart from './components/user/Cart'
 import LikedProducts from './components/user/LikedProducts'
 import UserProtectedRoute from './components/user/UserProtectedRoute'
+import AdminHome from './components/admin/AdminHome'
+import AdminAddProduct from './components/admin/AdminAddProduct'
 
 const App = () => {
   return (
@@ -22,8 +23,9 @@ const App = () => {
       </Route>
 
       {/* ADMIN */}
-      <Route path="/admin" element={<Navigate to="/admin/signin" replace />} />
-      <Route path='/admin/signin' element={<AdminSignIn />} />
+      <Route path="/admin" element={<Navigate to="/admin/home" replace />} />
+      <Route path='/admin/home' element={<AdminHome />} />
+      <Route path='/admin/add-product' element={<AdminAddProduct />} />
 
       {/* Bất kỳ đường dẫn nào khác → quay về /user */}
       <Route path="*" element={<Navigate to="/user" replace />} />

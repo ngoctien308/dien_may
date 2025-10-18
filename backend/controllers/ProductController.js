@@ -3,7 +3,7 @@ import db from "../db.js";
 export const getAllProducts = async (req, res) => {
   try {
     const [products] = await db.query(
-      'SELECT * from products'
+      'SELECT * from products inner join categories on products.category_id = categories.category_id'
     );
     res.status(200).json({ products });
   } catch (error) {

@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { Link } from "react-router-dom"
 import Header from "./Header"
+import { formatPrice } from "../../utils/functions"
 
 export default function Cart() {
     const [cartItems, setCartItems] = useState([
@@ -27,11 +28,7 @@ export default function Cart() {
 
     const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0)
     const shipping = subtotal > 500000 ? 0 : 30000
-    const total = subtotal + shipping
-
-    const formatPrice = (price) => {
-        return new Intl.NumberFormat("vi-VN").format(price)
-    }
+    const total = subtotal + shipping   
 
     if (cartItems.length === 0) {
         return (

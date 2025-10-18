@@ -3,7 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 dotenv.config();
 import multer from 'multer';
-import db from './db.js';
+import categoryRouter from './routes/categoryRouter.js';
 import productRouter from './routes/productRouter.js';
 
 const app = express();
@@ -51,6 +51,7 @@ app.post('/api/upload', upload.array('images', 3), (req, res) => {
 
 // routes
 app.use('/api/products', productRouter);
+app.use('/api/categories', categoryRouter);
 
 app.use((req, res) => {
   res.status(404).json({ message: 'Route not found' });
