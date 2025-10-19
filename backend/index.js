@@ -5,13 +5,13 @@ dotenv.config();
 import multer from 'multer';
 import categoryRouter from './routes/categoryRouter.js';
 import productRouter from './routes/productRouter.js';
+import commentRouter from './routes/commentRouter.js';
 
 const app = express();
 const PORT = 3000;
 
-
 // middlewares
-app.use(express.json());
+app.use(express.json({ limit: '50mb' }));
 app.use(cors());
 app.use('/uploads', express.static('uploads')); // Cho phép truy cập ảnh tĩnh
 
@@ -32,7 +32,7 @@ const upload = multer({ storage });
 app.post('/api/upload', upload.array('images', 3), (req, res) => {
   try {
     if (!req.files || req.files.length === 0) {
-      return res.status(400).json({ error: 'Không có file' });
+      return res.status(400).json({ error: 'Không có file nào được upload' });
     }
 
     // Trả về mảng link URL
@@ -43,15 +43,15 @@ app.post('/api/upload', upload.array('images', 3), (req, res) => {
       urls: fileUrls
     });
   } catch (error) {
-    console.log(error)
+    console.log('Upload error:', error);
     res.status(500).json({ error: 'Lỗi server' });
   }
-
-});
+})
 
 // routes
 app.use('/api/products', productRouter);
 app.use('/api/categories', categoryRouter);
+app.use('/api/comments', commentRouter);
 
 app.use((req, res) => {
   res.status(404).json({ message: 'Route not found' });

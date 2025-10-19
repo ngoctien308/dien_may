@@ -2,7 +2,8 @@ import { useEffect, useState } from "react"
 import { Heart, ShoppingCart, Minus, Plus, Star } from "lucide-react"
 import Header from "./Header"
 import Footer from "./Footer"
-import { reviews } from "../../mock-data"
+import ProductComments from "./ProductComments"
+import { reviews, mockComments } from "../../mock-data"
 import axios from "axios"
 import { useParams } from "react-router-dom"
 import { formatPrice } from "../../utils/functions"
@@ -32,10 +33,6 @@ export default function ProductDetailPage() {
 
     fetchProduct();
   }, []);
-
-  useEffect(() => {
-    console.log(product)
-  }, [product]);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -200,7 +197,7 @@ export default function ProductDetailPage() {
                   : "text-gray-500 hover:text-gray-700"
                   }`}
               >
-                Đánh giá (1000)
+                Bình luận
               </button>
             </div>
           </div>
@@ -232,30 +229,7 @@ export default function ProductDetailPage() {
             )}
 
             {activeTab === "reviews" && (
-              <div className="space-y-4">
-                {reviews.map((review) => (
-                  <div key={review.id} className="rounded-lg border border-gray-200 bg-white p-6">
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <h4 className="font-semibold text-gray-900">{review.name}</h4>
-                        <div className="mt-1 flex items-center gap-2">
-                          <div className="flex">
-                            {[...Array(5)].map((_, i) => (
-                              <Star
-                                key={i}
-                                className={`h-4 w-4 ${i < 4.0 ? "fill-yellow-400 text-yellow-400" : "text-gray-300"
-                                  }`}
-                              />
-                            ))}
-                          </div>
-                          <span className="text-sm text-gray-500">{review.date}</span>
-                        </div>
-                      </div>
-                    </div>
-                    <p className="mt-3 text-gray-700">{review.comment}</p>
-                  </div>
-                ))}
-              </div>
+              <ProductComments productId={id} />
             )}
           </div>
         </div>

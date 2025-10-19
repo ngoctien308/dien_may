@@ -3,11 +3,13 @@ import { formatPrice } from '../../utils/functions.js'
 import axios from "axios"
 import { Eye, Edit2, Trash2, Search } from "lucide-react"
 import { Link } from "react-router-dom"
+import { toast } from 'sonner'
 
 const AdminProductsTab = () => {
   const [products, setProducts] = useState([])
   const [searchTerm, setSearchTerm] = useState("")
   const [filteredProducts, setFilteredProducts] = useState([])
+  const [deleteConfirm, setDeleteConfirm] = useState({ show: false, product: null })
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -33,6 +35,29 @@ const AdminProductsTab = () => {
 
   const calculateDiscountedPrice = (price, discount) => {
     return Math.round(price * (1 - discount / 100))
+  }
+
+  const handleDeleteProduct = async (productId) => {
+    try {
+      await axios.delete(`http://localhost:3000/api/products/${productId}`)
+      
+      // Cập nhật danh sách sản phẩm
+      setProducts(prev => prev.filter(product => product.product_id !== productId))
+      setDeleteConfirm({ show: false, product: null })
+      
+      toast.success('Xóa sản phẩm thành công!')
+    } catch (error) {
+      console.error('Error deleting product:', error)
+      toast.error('Có lỗi xảy ra khi xóa sản phẩm!')
+    }
+  }
+
+  const showDeleteConfirm = (product) => {
+    setDeleteConfirm({ show: true, product })
+  }
+
+  const cancelDelete = () => {
+    setDeleteConfirm({ show: false, product: null })
   }
 
   return (
@@ -130,19 +155,22 @@ const AdminProductsTab = () => {
                     </td>
                     <td className="px-6 py-4 text-sm">
                       <div className="flex gap-2">
-                        <button
+                        <Link
+                          to={`/admin/product-detail/${product.product_id}`}
                           className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors duration-150"
                           title="Xem chi tiết"
                         >
                           <Eye className="w-4 h-4" />
-                        </button>
-                        <button
+                        </Link>
+                        <Link
+                          to={`/admin/edit-product/${product.product_id}`}
                           className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors duration-150"
                           title="Sửa"
                         >
                           <Edit2 className="w-4 h-4" />
-                        </button>
+                        </Link>
                         <button
+                          onClick={() => showDeleteConfirm(product)}
                           className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors duration-150"
                           title="Xóa"
                         >
@@ -163,6 +191,40 @@ const AdminProductsTab = () => {
           </table>
         </div>
       </div>
+
+      {/* Delete Confirmation Modal */}
+      {deleteConfirm.show && (
+        <div className="fixed inset-0 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4 shadow-lg border border-gray-200 backdrop-blur-sm duration-300 transition-all">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
+                <Trash2 className="w-5 h-5 text-red-600" />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900">Xác nhận xóa sản phẩm</h3>
+            </div>
+            
+            <p className="text-gray-600 mb-6">
+              Bạn có chắc chắn muốn xóa sản phẩm <strong>"{deleteConfirm.product?.product_name}"</strong>? 
+              Hành động này không thể hoàn tác.
+            </p>
+            
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={cancelDelete}
+                className="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors font-medium"
+              >
+                Hủy
+              </button>
+              <button
+                onClick={() => handleDeleteProduct(deleteConfirm.product.product_id)}
+                className="px-4 py-2 bg-red-600 text-white hover:bg-red-700 rounded-lg transition-colors font-medium"
+              >
+                Xóa sản phẩm
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

@@ -1,4 +1,4 @@
-import { Menu, X, Package, MessageSquare, BarChart3, LogOut } from "lucide-react"
+import { Menu, X, Package, MessageSquare, BarChart3, LogOut, Tag } from "lucide-react"
 
 const AdminSidebar = ({ setActiveTab, sidebarOpen, activeTab, setSidebarOpen }) => {
     return (
@@ -26,6 +26,15 @@ const AdminSidebar = ({ setActiveTab, sidebarOpen, activeTab, setSidebarOpen }) 
                 >
                     <Package className="w-5 h-5 flex-shrink-0" />
                     {sidebarOpen && <span>Sản phẩm</span>}
+                </button>
+
+                <button
+                    onClick={() => setActiveTab("categories")}
+                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${activeTab === "categories" ? "bg-gray-800 text-white" : "text-gray-400 hover:bg-gray-800"
+                        }`}
+                >
+                    <Tag className="w-5 h-5 flex-shrink-0" />
+                    {sidebarOpen && <span>Danh mục</span>}
                 </button>
 
                 <button

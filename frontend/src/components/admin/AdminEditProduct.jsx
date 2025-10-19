@@ -1,12 +1,14 @@
-import { useEffect, useState, version } from "react"
-import { Link, useNavigate } from "react-router-dom"
+import { useEffect, useState } from "react"
+import { useParams, useNavigate, Link } from "react-router-dom"
 import { ArrowLeft, Upload, Plus, X } from "lucide-react"
 import axios from "axios"
-import { toast } from 'sonner';
+import { toast } from 'sonner'
 
-export default function AdminAddProduct() {
-  const navigate = useNavigate();
-  const [categories, setCategories] = useState([]);
+export default function AdminEditProduct() {
+  const { productId } = useParams()
+  const navigate = useNavigate()
+  const [categories, setCategories] = useState([])
+  const [loading, setLoading] = useState(true)
   const [formData, setFormData] = useState({
     product_name: "",
     product_price: "",
@@ -28,6 +30,61 @@ export default function AdminAddProduct() {
     image2: null,
     image3: null,
   })
+
+  const [currentImages, setCurrentImages] = useState({
+    image1: "",
+    image2: "",
+    image3: "",
+  })
+
+  useEffect(() => {
+    fetchCategories()
+    fetchProduct()
+  }, [productId])
+
+  const fetchCategories = async () => {
+    try {
+      const res = await axios.get('http://localhost:3000/api/categories')
+      setCategories(res.data.categories)
+    } catch (error) {
+      console.error('Lỗi khi lấy danh mục:', error)
+    }
+  }
+
+  const fetchProduct = async () => {
+    try {
+      const res = await axios.get(`http://localhost:3000/api/products/${productId}`)
+      const product = res.data.product
+      
+      setFormData({
+        product_name: product.product_name || "",
+        product_price: product.product_price || "",
+        product_discount: product.product_discount || "",
+        category_id: product.category_id || "",
+        specifications: product.specifications || "",
+        description: product.description || "",
+        versions: product.versions ? product.versions.map(v => v.version_name).join(', ') : ""
+      })
+
+      setCurrentImages({
+        image1: product.image1 || "",
+        image2: product.image2 || "",
+        image3: product.image3 || "",
+      })
+
+      setImagePreview({
+        image1: product.image1 || null,
+        image2: product.image2 || null,
+        image3: product.image3 || null,
+      })
+    } catch (error) {
+      console.error('Lỗi khi lấy thông tin sản phẩm:', error)
+      toast.error('Có lỗi xảy ra khi tải thông tin sản phẩm!')
+      navigate('/admin/home')
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const handleInputChange = (e) => {
     const { name, value } = e.target
@@ -58,51 +115,91 @@ export default function AdminAddProduct() {
     }
   }
 
+  const removeImage = (imageField) => {
+    setImageFiles((prev) => ({
+      ...prev,
+      [imageField]: null,
+    }))
+    setImagePreview((prev) => ({
+      ...prev,
+      [imageField]: null,
+    }))
+    setCurrentImages((prev) => ({
+      ...prev,
+      [imageField]: "",
+    }))
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     try {
-      const formDataImg = new FormData();
-
-      // Append file objects instead of base64 strings
-      if (imageFiles.image1) formDataImg.append('images', imageFiles.image1);
-      if (imageFiles.image2) formDataImg.append('images', imageFiles.image2);
-      if (imageFiles.image3) formDataImg.append('images', imageFiles.image3);
-
-      const res = await axios.post('http://localhost:3000/api/upload', formDataImg, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-        maxBodyLength: Infinity,
-        maxContentLength: Infinity
-      });
+      // Upload ảnh mới nếu có
+      let imageUrls = { ...currentImages }
       
-      const imgUrls = res.data.urls; // API trả về mảng URL ảnh
+      const formDataImg = new FormData()
+      let hasNewImages = false
+
+      if (imageFiles.image1) {
+        formDataImg.append('images', imageFiles.image1)
+        hasNewImages = true
+      }
+      if (imageFiles.image2) {
+        formDataImg.append('images', imageFiles.image2)
+        hasNewImages = true
+      }
+      if (imageFiles.image3) {
+        formDataImg.append('images', imageFiles.image3)
+        hasNewImages = true
+      }
+
+      if (hasNewImages) {
+        const uploadRes = await axios.post('http://localhost:3000/api/upload', formDataImg, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+          maxBodyLength: Infinity,
+          maxContentLength: Infinity
+        })
+        
+        const uploadedUrls = uploadRes.data.urls
+        let urlIndex = 0
+        
+        if (imageFiles.image1) {
+          imageUrls.image1 = uploadedUrls[urlIndex++]
+        }
+        if (imageFiles.image2) {
+          imageUrls.image2 = uploadedUrls[urlIndex++]
+        }
+        if (imageFiles.image3) {
+          imageUrls.image3 = uploadedUrls[urlIndex++]
+        }
+      }
+
+      // Cập nhật sản phẩm
       const productData = {
         ...formData,
-        image1: imgUrls[0] || null,
-        image2: imgUrls[1] || null,
-        image3: imgUrls[2] || null,
-      };
+        image1: imageUrls.image1,
+        image2: imageUrls.image2,
+        image3: imageUrls.image3,
+      }
 
-      await axios.post('http://localhost:3000/api/products', productData);
-      toast.success('Thêm sản phẩm thành công!');
-      navigate('/admin/home');
+      await axios.put(`http://localhost:3000/api/products/${productId}`, productData)
+      toast.success('Cập nhật sản phẩm thành công!')
+      navigate('/admin/home')
     } catch (error) {
-      console.error('Upload error:', error);
-      toast('Đã có lỗi xảy ra khi upload ảnh.');
+      console.error('Error updating product:', error)
+      toast.error('Có lỗi xảy ra khi cập nhật sản phẩm!')
     }
   }
 
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const res = await axios.get('http://localhost:3000/api/categories');
-        setCategories(res.data.categories);
-      } catch (error) {
-        console.error('Lỗi khi lấy danh mục:', error);
-      }
-    };
-
-    fetchCategories();
-  }, [])
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto mb-4"></div>
+          <p className="text-gray-600">Đang tải thông tin sản phẩm...</p>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
@@ -116,8 +213,8 @@ export default function AdminAddProduct() {
             <ArrowLeft className="w-5 h-5" />
             <span>Quay lại</span>
           </Link>
-          <h1 className="text-3xl font-bold text-gray-900">Thêm sản phẩm mới</h1>
-          <p className="text-gray-600 mt-2">Điền đầy đủ thông tin sản phẩm dưới đây</p>
+          <h1 className="text-3xl font-bold text-gray-900">Sửa sản phẩm</h1>
+          <p className="text-gray-600 mt-2">Cập nhật thông tin sản phẩm dưới đây</p>
         </div>
 
         {/* Form */}
@@ -145,6 +242,7 @@ export default function AdminAddProduct() {
                 <label className="block text-sm font-medium text-gray-900 mb-2">Danh mục *</label>
                 <select
                   name="category_id"
+                  value={formData.category_id}
                   onChange={handleInputChange}
                   required
                   className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all bg-white"
@@ -242,11 +340,23 @@ export default function AdminAddProduct() {
                       className="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-gray-400 hover:bg-gray-50 transition-all"
                     >
                       {imagePreview[imageField] ? (
-                        <img
-                          src={imagePreview[imageField] || "/placeholder.svg"}
-                          alt={`Preview ${index + 1}`}
-                          className="w-full h-full object-cover rounded-lg"
-                        />
+                        <div className="relative w-full h-full">
+                          <img
+                            src={imagePreview[imageField]}
+                            alt={`Preview ${index + 1}`}
+                            className="w-full h-full object-cover rounded-lg"
+                          />
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.preventDefault()
+                              removeImage(imageField)
+                            }}
+                            className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors"
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+                        </div>
                       ) : (
                         <div className="flex flex-col items-center justify-center py-6">
                           <Upload className="w-8 h-8 text-gray-400 mb-2" />
@@ -287,7 +397,7 @@ export default function AdminAddProduct() {
               type="submit"
               className="flex-1 px-6 py-3 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors font-medium"
             >
-              Thêm sản phẩm
+              Cập nhật sản phẩm
             </button>
           </div>
         </form>

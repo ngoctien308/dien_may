@@ -1,6 +1,7 @@
 import { useState } from "react"
 import AdminSidebar from "./AdminSidebar"
 import AdminProductsTab from "./AdminProductsTab";
+import AdminCategoriesTab from "./AdminCategoriesTab";
 import AdminCommentsTab from "./AdminCommentsTab";
 import AdminStatisticsTab from "./AdminStatisticsTab";
 
@@ -20,6 +21,7 @@ export default function Admin() {
           <div className="flex items-center justify-between">
             <h1 className="text-2xl font-bold text-gray-900">
               {activeTab === "products" && "Quản lý sản phẩm"}
+              {activeTab === "categories" && "Quản lý danh mục"}
               {activeTab === "comments" && "Bình luận đánh giá"}
               {activeTab === "statistics" && "Thống kê"}
             </h1>
@@ -31,6 +33,11 @@ export default function Admin() {
           {/* Products Tab */}
           {activeTab === "products" && (
             <AdminProductsTab />
+          )}
+
+          {/* Categories Tab */}
+          {activeTab === "categories" && (
+            <AdminCategoriesTab />
           )}
 
           {/* Comments Tab */}

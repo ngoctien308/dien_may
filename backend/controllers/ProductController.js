@@ -63,3 +63,84 @@ export const createProduct = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+export const updateProduct = async (req, res) => {
+  try {
+    const productId = req.params.product_id;
+    const { product_name, product_price, product_discount, specifications, description, category_id, image1, image2, image3, versions } = req.body;
+    
+    // Kiểm tra sản phẩm có tồn tại không
+    const [product] = await db.query(
+      'SELECT * FROM products WHERE product_id = ?',
+      [productId]
+    );
+
+    if (product.length === 0) {
+      return res.status(404).json({ message: 'Sản phẩm không tồn tại.' });
+    }
+
+    // Cập nhật thông tin sản phẩm
+    await db.query(
+      'UPDATE products SET product_name = ?, product_price = ?, product_discount = ?, specifications = ?, description = ?, category_id = ?, image1 = ?, image2 = ?, image3 = ? WHERE product_id = ?',
+      [product_name, product_price, product_discount, specifications, description, category_id, image1, image2, image3, productId]
+    );
+
+    // Cập nhật phiên bản sản phẩm nếu có
+    if (versions) {
+      // Xóa các phiên bản cũ
+      await db.query(
+        'DELETE FROM product_versions WHERE product_id = ?',
+        [productId]
+      );
+
+      // Thêm các phiên bản mới
+      const versionsArray = versions
+        .split(',')
+        .map(v => v.trim())
+        .filter(v => v.length > 0);
+
+      for (const version of versionsArray) {
+        await db.query(
+          'INSERT INTO product_versions (product_id, version_name) VALUES (?, ?)',
+          [productId, version]
+        );
+      }
+    }
+
+    res.status(200).json({ message: 'Cập nhật sản phẩm thành công.' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const deleteProduct = async (req, res) => {
+  try {
+    const productId = req.params.product_id;
+    
+    // Kiểm tra sản phẩm có tồn tại không
+    const [product] = await db.query(
+      'SELECT * FROM products WHERE product_id = ?',
+      [productId]
+    );
+
+    if (product.length === 0) {
+      return res.status(404).json({ message: 'Sản phẩm không tồn tại.' });
+    }
+
+    // Xóa các phiên bản sản phẩm trước
+    // await db.query(
+    //   'DELETE FROM product_versions WHERE product_id = ?',
+    //   [productId]
+    // );
+
+    // Xóa sản phẩm
+    await db.query(
+      'DELETE FROM products WHERE product_id = ?',
+      [productId]
+    );
+
+    res.status(200).json({ message: 'Xóa sản phẩm thành công.' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};

@@ -7,6 +7,8 @@ import LikedProducts from './components/user/LikedProducts'
 import UserProtectedRoute from './components/user/UserProtectedRoute'
 import AdminHome from './components/admin/AdminHome'
 import AdminAddProduct from './components/admin/AdminAddProduct'
+import AdminEditProduct from './components/admin/AdminEditProduct'
+import AdminProductDetail from './components/admin/AdminProductDetail'
 
 const App = () => {
   return (
@@ -26,6 +28,8 @@ const App = () => {
       <Route path="/admin" element={<Navigate to="/admin/home" replace />} />
       <Route path='/admin/home' element={<AdminHome />} />
       <Route path='/admin/add-product' element={<AdminAddProduct />} />
+      <Route path='/admin/edit-product/:productId' element={<AdminEditProduct />} />
+      <Route path='/admin/product-detail/:productId' element={<AdminProductDetail />} />
 
       {/* Bất kỳ đường dẫn nào khác → quay về /user */}
       <Route path="*" element={<Navigate to="/user" replace />} />
