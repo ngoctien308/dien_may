@@ -48,18 +48,16 @@ const AdminCommentsTab = () => {
     // Filter by search term
     if (searchTerm) {
       filtered = filtered.filter(comment =>
-        comment.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        comment.user_id?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        comment.product_name?.toLowerCase().includes(searchTerm.toLowerCase())
+        comment.comment_content.toLowerCase().includes(searchTerm.toLowerCase())
       )
     }
 
     // Filter by rating
     if (filterRating !== "all") {
       if (filterRating === "no-rating") {
-        filtered = filtered.filter(comment => !comment.rating)
+        filtered = filtered.filter(comment => !comment.comment_rating)
       } else {
-        filtered = filtered.filter(comment => comment.rating == filterRating)
+        filtered = filtered.filter(comment => comment.comment_rating == filterRating)
       }
     }
 
@@ -89,17 +87,16 @@ const AdminCommentsTab = () => {
 
   const renderStars = (rating) => {
     if (!rating) return <span className="text-gray-400 text-sm">Chưa đánh giá</span>
-    
+
     return (
       <div className="flex gap-1">
         {[1, 2, 3, 4, 5].map((star) => (
           <Star
             key={star}
-            className={`w-4 h-4 ${
-              star <= rating
+            className={`w-4 h-4 ${star <= rating
                 ? 'text-yellow-400 fill-current'
                 : 'text-gray-300'
-            }`}
+              }`}
           />
         ))}
       </div>
@@ -205,7 +202,7 @@ const AdminCommentsTab = () => {
               className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all"
             />
           </div>
-          
+
           <div className="flex items-center gap-2">
             <Filter className="w-5 h-5 text-gray-400" />
             <select
@@ -243,7 +240,7 @@ const AdminCommentsTab = () => {
                       <p className="text-sm text-gray-500">{formatDate(comment.created_at)}</p>
                     </div>
                   </div>
-                  
+
                   <button
                     onClick={() => showDeleteConfirm(comment)}
                     className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors duration-150"
@@ -258,7 +255,7 @@ const AdminCommentsTab = () => {
                     <span className="text-sm font-medium text-gray-700">Sản phẩm:</span>
                     <span className="text-sm text-gray-600">{comment.product_name}</span>
                   </div>
-                  
+
                   {comment.comment_rating && (
                     <div className="flex items-center gap-2 mb-3">
                       <span className="text-sm font-medium text-gray-700">Đánh giá:</span>
@@ -269,7 +266,7 @@ const AdminCommentsTab = () => {
 
                 <div className="bg-gray-50 rounded-lg p-4">
                   <p className="text-gray-700 leading-relaxed">{comment.comment_content}</p>
-                </div>                
+                </div>
               </div>
             ))}
           </div>
@@ -277,8 +274,8 @@ const AdminCommentsTab = () => {
           <div className="text-center py-12">
             <MessageCircle className="w-12 h-12 text-gray-400 mx-auto mb-4" />
             <p className="text-gray-500">
-              {searchTerm || filterRating !== "all" 
-                ? "Không tìm thấy bình luận nào phù hợp với bộ lọc" 
+              {searchTerm || filterRating !== "all"
+                ? "Không tìm thấy bình luận nào phù hợp với bộ lọc"
                 : "Chưa có bình luận nào"}
             </p>
           </div>
@@ -295,12 +292,12 @@ const AdminCommentsTab = () => {
               </div>
               <h3 className="text-lg font-semibold text-gray-900">Xác nhận xóa bình luận</h3>
             </div>
-            
+
             <p className="text-gray-600 mb-6">
-              Bạn có chắc chắn muốn xóa bình luận của <strong>"User {deleteConfirm.comment?.user_id?.slice(-4)}"</strong>? 
+              Bạn có chắc chắn muốn xóa bình luận của <strong>"User {deleteConfirm.comment?.user_id?.slice(-4)}"</strong>?
               Hành động này không thể hoàn tác.
             </p>
-            
+
             <div className="flex gap-3 justify-end">
               <button
                 onClick={cancelDelete}

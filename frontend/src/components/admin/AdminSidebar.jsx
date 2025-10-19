@@ -1,4 +1,5 @@
 import { Menu, X, Package, MessageSquare, BarChart3, LogOut, Tag } from "lucide-react"
+import { Link } from "react-router-dom"
 
 const AdminSidebar = ({ setActiveTab, sidebarOpen, activeTab, setSidebarOpen }) => {
     return (
@@ -57,12 +58,12 @@ const AdminSidebar = ({ setActiveTab, sidebarOpen, activeTab, setSidebarOpen }) 
             </nav>
 
             {/* Logout */}
-            <div className="px-3 py-4 border-t border-gray-800">
+            <Link to='/' className="px-3 py-4 border-t border-gray-800">
                 <button className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-gray-400 hover:bg-gray-800 transition-colors">
                     <LogOut className="w-5 h-5 flex-shrink-0" />
                     {sidebarOpen && <span>Đăng xuất</span>}
                 </button>
-            </div>
+            </Link>
         </div>
     )
 }
