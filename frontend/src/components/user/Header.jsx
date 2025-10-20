@@ -1,10 +1,30 @@
 import { SignInButton, useAuth, UserButton } from "@clerk/clerk-react"
 import { Heart, Search, ShoppingCart } from "lucide-react"
+import { useEffect } from "react";
 import { Link } from 'react-router-dom'
+import axios from "axios";
+import { useState } from "react";
 
 const Header = () => {
     const { isSignedIn, userId } = useAuth();
     const categories = ["Điện thoại", "Laptop", "Tablet", "Phụ kiện", "Âm thanh"];
+    const [likedProductsQuantity, setLikedProductsQuantity] = useState(0);
+
+    useEffect(() => {
+        if (isSignedIn && userId) {
+            const fetchFavorites = async () => {
+                try {
+                    const res = await axios(`http://localhost:3000/api/like-product/user/${userId}`);                    
+                    setLikedProductsQuantity(res.data.likedProducts.length);
+                } catch (error) {
+                    console.error('Lỗi khi lấy sản phẩm yêu thích:', error);
+                }
+            }
+            fetchFavorites();
+        }
+    }, [isSignedIn, userId]);
+
+
     return (
         <header className="sticky top-0 z-50 w-full border-b border-gray-200 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
             <div className="container mx-auto flex h-16 items-center justify-between px-10 md:px-6">
@@ -43,7 +63,7 @@ const Header = () => {
                     <Link to='/user/liked-products' className="relative flex h-10 w-10 items-center justify-center rounded-lg hover:bg-gray-100 transition-colors">
                         <Heart className="h-5 w-5 text-gray-700" />
                         <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-gray-900 text-[10px] font-medium text-white">
-                            0
+                            {likedProductsQuantity}
                         </span>
                     </Link>
 

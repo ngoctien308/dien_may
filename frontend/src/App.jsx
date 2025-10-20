@@ -4,7 +4,6 @@ import Home from './components/user/Home'
 import ProductDetail from './components/user/ProductDetail'
 import Cart from './components/user/Cart'
 import LikedProducts from './components/user/LikedProducts'
-import UserProtectedRoute from './components/user/UserProtectedRoute'
 import AdminHome from './components/admin/AdminHome'
 import AdminAddProduct from './components/admin/AdminAddProduct'
 import AdminEditProduct from './components/admin/AdminEditProduct'
@@ -18,11 +17,8 @@ const App = () => {
       <Route path='/user/signin' element={<SignIn />} />
       <Route path='/user/home' element={<Home />} />
       <Route path='/user/products/:id' element={<ProductDetail />} />
-
-      <Route element={<UserProtectedRoute />}>
-        <Route path='/user/cart' element={<Cart />} />
-        <Route path='/user/liked-products' element={<LikedProducts />} />
-      </Route>
+      <Route path='/user/cart' element={<Cart />} />
+      <Route path='/user/liked-products' element={<LikedProducts />} />
 
       {/* ADMIN */}
       <Route path="/admin" element={<Navigate to="/admin/home" replace />} />

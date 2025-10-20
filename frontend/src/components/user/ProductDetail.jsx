@@ -7,16 +7,19 @@ import { reviews, mockComments } from "../../mock-data"
 import axios from "axios"
 import { useParams } from "react-router-dom"
 import { formatPrice } from "../../utils/functions"
+import { toast } from "sonner"
+import { useAuth } from "@clerk/clerk-react"
 
 export default function ProductDetailPage() {
   const [product, setProduct] = useState([]);
   const { id } = useParams();
+  const { userId } = useAuth();
 
   const [selectedImage, setSelectedImage] = useState('')
   const [quantity, setQuantity] = useState(1)
   const [isLiked, setIsLiked] = useState(false);
   const [activeTab, setActiveTab] = useState("details");
-  const [selectedVersion, setSelectedVersion] = useState(0);  
+  const [selectedVersion, setSelectedVersion] = useState(0);
 
   const handleChangeVersion = (version_id) => {
     setSelectedVersion(version_id);
@@ -33,6 +36,47 @@ export default function ProductDetailPage() {
 
     fetchProduct();
   }, []);
+
+  // check if product is liked
+  useEffect(() => {
+    const checkIfLiked = async () => {
+      try {
+        const res = await axios.get(`http://localhost:3000/api/like-product/product/${product.product_id}/user/${userId}`);
+        setIsLiked(res.data.isLiked);
+      } catch (error) {
+        console.log('Lỗi khi kiểm tra sản phẩm yêu thích:', error);
+      }
+    };
+
+    if (userId) {
+      checkIfLiked();
+    }
+  }, [userId, id]);
+
+  const changeLikedOrUnliked = async () => {
+    if (isLiked) {
+      try {
+        await axios.delete(`http://localhost:3000/api/like-product/product/${product.product_id}/user/${userId}`);
+        toast.success('Đã xóa khỏi danh sách yêu thích');
+      } catch (error) {
+        toast.error('Lỗi khi xóa khỏi danh sách yêu thích');
+        console.log(error)
+      }
+
+    } else {
+      // Logic to add product to favorites
+      try {
+        await axios.post('http://localhost:3000/api/like-product', {
+          userId,
+          productId: product.product_id
+        });
+        toast.success('Đã thêm vào danh sách yêu thích');
+      } catch (error) {
+        toast.error('Lỗi khi thêm vào danh sách yêu thích');
+        console.log(error)
+      }
+    }
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -62,8 +106,8 @@ export default function ProductDetailPage() {
                   key={index}
                   onClick={() => setSelectedImage(image)}
                   className={`aspect-square overflow-hidden rounded-lg border-2 transition-all ${selectedImage === index
-                      ? "border-gray-900"
-                      : "border-gray-200 hover:border-gray-400"
+                    ? "border-gray-900"
+                    : "border-gray-200 hover:border-gray-400"
                     }`}
                 >
                   <img
@@ -168,7 +212,10 @@ export default function ProductDetailPage() {
                 Đặt hàng ngay
               </button>
               <button
-                onClick={() => setIsLiked(!isLiked)}
+                onClick={() => {
+                  setIsLiked(!isLiked)
+                  changeLikedOrUnliked();
+                }}
                 className="flex h-12 w-12 items-center justify-center rounded-lg border border-gray-200 transition-colors hover:bg-gray-50"
               >
                 <Heart className={`h-5 w-5 ${isLiked ? "fill-red-500 text-red-500" : "text-gray-600"}`} />

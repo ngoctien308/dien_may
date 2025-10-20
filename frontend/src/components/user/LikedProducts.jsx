@@ -1,30 +1,11 @@
-"use client"
-
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
 import { Heart, ShoppingCart, Trash2 } from "lucide-react"
 import Header from "./Header"
 import { formatPrice } from "../../utils/functions"
 
 export default function LikedProducts() {
-    const [likedItems, setLikedItems] = useState([
-        {
-            id: 1,
-            name: "iPhone 15 Pro Max",
-            image: "/anh1.jpg",
-            price: 29990000,
-            originalPrice: 34990000,
-            variant: "256GB - Titan Tự Nhiên",
-        },
-        {
-            id: 3,
-            name: "Giày sneaker trắng",
-            image: "/anh2.jpg",
-            price: 890000,
-            originalPrice: 1200000,
-            variant: "Size 42",
-        }
-    ])
+    const [likedItems, setLikedItems] = useState([]);
 
     const removeFromLiked = (id) => {
         setLikedItems(likedItems.filter((item) => item.id !== id))
@@ -37,21 +18,24 @@ export default function LikedProducts() {
 
     if (likedItems.length === 0) {
         return (
-            <div className="min-h-screen bg-gray-50 py-12">
-                <div className="max-w-7xl mx-auto px-4">
-                    <div className="bg-white rounded-lg shadow-sm p-12 text-center">
-                        <Heart className="w-24 h-24 mx-auto text-gray-300 mb-4" />
-                        <h2 className="text-2xl font-semibold text-gray-900 mb-2">Danh sách yêu thích trống</h2>
-                        <p className="text-gray-600 mb-6">Bạn chưa thêm sản phẩm nào vào danh sách yêu thích</p>
-                        <Link
-                            to="/"
-                            className="inline-block bg-gray-900 text-white px-8 py-3 rounded-lg hover:bg-gray-800 transition-colors"
-                        >
-                            Tiếp tục mua sắm
-                        </Link>
+            <>
+                <Header />
+                <div className="min-h-screen bg-gray-50 py-12">
+                    <div className="max-w-7xl mx-auto px-4">
+                        <div className="bg-white rounded-lg shadow-sm p-12 text-center">
+                            <Heart className="w-24 h-24 mx-auto text-gray-300 mb-4" />
+                            <h2 className="text-2xl font-semibold text-gray-900 mb-2">Danh sách yêu thích trống</h2>
+                            <p className="text-gray-600 mb-6">Bạn chưa thêm sản phẩm nào vào danh sách yêu thích</p>
+                            <Link
+                                to="/"
+                                className="inline-block bg-gray-900 text-white px-8 py-3 rounded-lg hover:bg-gray-800 transition-colors"
+                            >
+                                Tiếp tục mua sắm
+                            </Link>
+                        </div>
                     </div>
                 </div>
-            </div>
+            </>
         )
     }
 

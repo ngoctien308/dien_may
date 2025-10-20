@@ -1,17 +1,69 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Heart, ShoppingCart } from "lucide-react"
 import { Link } from "react-router-dom"
 import { formatPrice } from "../../utils/functions";
+import { useAuth } from '@clerk/clerk-react'
+import { toast } from 'sonner'
+import axios from "axios";
 
 export default function ProductCard({ product }) {
   const [isLiked, setIsLiked] = useState(false);
+  const { userId } = useAuth();
+
+  useEffect(() => {
+    if (userId) {
+      const checkLikeApi = async () => {
+        try {
+          const res = await axios.get('http://localhost:3000/api/like-product/product/' + product.product_id + '/user/' + userId);
+          setIsLiked(res.data.isLiked);
+        } catch (error) {
+          toast.error('Lỗi khi kiểm tra sản phẩm yêu thích.');
+        }
+      }
+
+      checkLikeApi();
+    }
+  }, [userId])
 
   const toggleLike = () => {
-    setIsLiked(!isLiked)
-  }  
+    setIsLiked(!isLiked);
+
+    const addToFavorite = async () => {
+      await axios.post('http://localhost:3000/api/like-product/', {
+        userId,
+        productId: product.product_id
+      });
+    };
+
+    const removeFromFavorite = async () => {
+      await axios.delete('http://localhost:3000/api/like-product/product/' + product.product_id + '/user/' + userId);
+    };
+
+    if (userId) {
+      if (!isLiked) {
+        try {
+          addToFavorite();
+          toast.success('Đã thêm vào sản phẩm yêu thích.');
+        } catch (error) {
+          toast.error('Lỗi khi thêm sản phẩm vào yêu thích.');
+        }
+      } else {
+        try {
+          removeFromFavorite();
+          toast.success('Đã xóa khỏi sản phẩm yêu thích.');
+        } catch (error) {
+          toast.error('Lỗi khi xóa sản phẩm khỏi yêu thích.');
+        }
+      }
+    }
+  }
 
   const handleAddToCart = () => {
   }
+
+  useEffect(() => {
+
+  }, [])
 
   return (
     <div className="group relative overflow-hidden rounded-lg border border-gray-200 bg-white transition-shadow hover:shadow-lg">
@@ -49,7 +101,7 @@ export default function ProductCard({ product }) {
 
       {/* Product Info */}
       <div className="p-4">
-        <h3 className="mb-2 line-clamp-2 text-sm font-extralight uppercase text-gray-900">{product.product_name}</h3>
+        <h3 className="mb-2 h-10 line-clamp-2 text-sm font-extralight uppercase text-gray-900">{product.product_name}</h3>
 
         <div className="mb-3 flex items-center gap-2">
           {product.product_discount == 0 && <span className="font-bold text-gray-900">{formatPrice(product.product_price)}</span>}
