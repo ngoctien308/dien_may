@@ -4,7 +4,7 @@ import { ArrowLeft, Upload, Plus, X } from "lucide-react"
 import axios from "axios"
 import { toast } from 'sonner';
 
-export default function AdminAddProduct() {
+export default function AdminAddProduct() {  
   const navigate = useNavigate();
   const [categories, setCategories] = useState([]);
   const [formData, setFormData] = useState({
@@ -83,7 +83,7 @@ export default function AdminAddProduct() {
       };
 
       await axios.post('http://localhost:3000/api/products', productData);
-      toast.success('Thêm sản phẩm thành công!');
+      toast.success('Thêm sản phẩm thành công!');    
       navigate('/admin/home');
     } catch (error) {
       console.error('Upload error:', error);

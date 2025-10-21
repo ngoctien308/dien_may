@@ -33,7 +33,7 @@ export default function ProductCard({ product }) {
         userId,
         productId: product.product_id
       });
-    };
+    };    
 
     const removeFromFavorite = async () => {
       await axios.delete('http://localhost:3000/api/like-product/product/' + product.product_id + '/user/' + userId);
@@ -60,10 +60,6 @@ export default function ProductCard({ product }) {
 
   const handleAddToCart = () => {
   }
-
-  useEffect(() => {
-
-  }, [])
 
   return (
     <div className="group relative overflow-hidden rounded-lg border border-gray-200 bg-white transition-shadow hover:shadow-lg">

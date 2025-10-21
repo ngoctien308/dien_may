@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect, useState, version } from "react"
 import { Heart, ShoppingCart, Minus, Plus, Star } from "lucide-react"
 import Header from "./Header"
 import Footer from "./Footer"
@@ -75,6 +75,26 @@ export default function ProductDetailPage() {
         toast.error('Lỗi khi thêm vào danh sách yêu thích');
         console.log(error)
       }
+    }
+  }
+
+  const handleQuantityChange = (delta) => {
+    setQuantity((prevQuantity) => {
+      const newQuantity = prevQuantity + delta;
+      return newQuantity < 1 ? 1 : newQuantity;
+    });
+  }
+
+  const handleAddToCart = async () => {        
+    try {
+      await axios.post(`http://localhost:3000/api/cart/user/${userId}`, {        
+        productId: product.product_id,
+        quantity, versionId: selectedVersion
+      });
+      toast.success('Đã thêm vào giỏ hàng');
+    } catch (error) {
+      toast.error('Lỗi khi thêm vào giỏ hàng');
+      console.log(error)
     }
   }
 
@@ -204,7 +224,7 @@ export default function ProductDetailPage() {
 
             {/* Action Buttons */}
             <div className="flex gap-3">
-              <button className="flex-1 rounded-lg bg-gray-900 px-6 py-3 font-semibold text-white transition-colors hover:bg-gray-800">
+              <button onClick={handleAddToCart} className="flex-1 rounded-lg bg-gray-900 px-6 py-3 font-semibold text-white transition-colors hover:bg-gray-800">
                 <ShoppingCart className="mr-2 inline-block h-5 w-5" />
                 Thêm vào giỏ hàng
               </button>

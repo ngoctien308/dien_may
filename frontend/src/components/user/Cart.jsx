@@ -4,18 +4,14 @@ import { useState } from "react"
 import { Link } from "react-router-dom"
 import Header from "./Header"
 import { formatPrice } from "../../utils/functions"
+import { useEffect } from "react"
+import axios from "axios"
+import { useAuth } from "@clerk/clerk-react"
 
 export default function Cart() {
-    const [cartItems, setCartItems] = useState([
-        {
-            id: 1,
-            name: "iPhone 15 Pro Max",
-            image: "/anh1.jpg",
-            price: 29990000,
-            quantity: 1,
-            variant: "256GB - Titan Tự Nhiên",
-        }
-    ])
+    const { userId } = useAuth();
+
+    const [cartItems, setCartItems] = useState([])
 
     const updateQuantity = (id, newQuantity) => {
         if (newQuantity < 1) return
@@ -26,9 +22,22 @@ export default function Cart() {
         setCartItems(cartItems.filter((item) => item.id !== id))
     }
 
-    const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0)
+    const subtotal = cartItems.reduce((sum, item) => sum + item.product_price * item.quantity, 0)
     const shipping = subtotal > 500000 ? 0 : 30000
-    const total = subtotal + shipping   
+    const total = subtotal + shipping;
+
+
+    useEffect(() => {
+        const fetchCartItems = async () => {
+            try {
+                const res = await axios.get(`http://localhost:3000/api/cart/user/${userId}`);
+                setCartItems(res.data.products);
+            } catch (error) {
+                console.error('Lỗi khi lấy dữ liệu giỏ hàng:', error);
+            }
+        }
+        fetchCartItems();
+    }, [userId])
 
     if (cartItems.length === 0) {
         return (
@@ -72,12 +81,12 @@ export default function Cart() {
                         {/* Cart Items */}
                         <div className="lg:col-span-2 space-y-4">
                             {cartItems.map((item) => (
-                                <div key={item.id} className="bg-white rounded-lg shadow-sm p-4 hover:shadow-md transition-shadow">
+                                <div key={item.cart_id} className="bg-white rounded-lg shadow-sm p-4 hover:shadow-md transition-shadow">
                                     <div className="flex gap-4">
                                         {/* Product Image */}
                                         <div className="relative w-24 h-24 flex-shrink-0 bg-gray-100 rounded-lg overflow-hidden">
                                             <img
-                                                src={item.image || "/placeholder.svg"}
+                                                src={item.image1 || "/placeholder.svg"}
                                                 alt={item.name}
                                                 className="w-full h-full object-cover"
                                             />
@@ -87,8 +96,8 @@ export default function Cart() {
                                         <div className="flex-1 min-w-0">
                                             <div className="flex justify-between items-start mb-2">
                                                 <div>
-                                                    <h3 className="font-semibold text-gray-900 mb-1">{item.name}</h3>
-                                                    <p className="text-sm text-gray-600">{item.variant}</p>
+                                                    <h3 className="font-semibold text-gray-900 mb-1">{item.product_name}</h3>
+                                                    <p className="text-sm text-gray-600">{item.version_name}</p>
                                                 </div>
                                                 <button
                                                     onClick={() => removeItem(item.id)}
@@ -102,35 +111,15 @@ export default function Cart() {
                                             </div>
 
                                             <div className="flex justify-between items-center mt-4">
-                                                {/* Quantity Controls */}
-                                                <div className="flex items-center gap-3">
-                                                    <button
-                                                        onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                                                        className="w-8 h-8 rounded-lg border border-gray-300 flex items-center justify-center hover:bg-gray-100 transition-colors"
-                                                        disabled={item.quantity <= 1}
-                                                    >
-                                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
-                                                        </svg>
-                                                    </button>
-                                                    <span className="w-12 text-center font-medium text-gray-900">{item.quantity}</span>
-                                                    <button
-                                                        onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                                                        className="w-8 h-8 rounded-lg border border-gray-300 flex items-center justify-center hover:bg-gray-100 transition-colors"
-                                                    >
-                                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                                                        </svg>
-                                                    </button>
-                                                </div>
+                                                <span className="text-center font-medium text-gray-900">Số lượng mua: {item.quantity}</span>
 
                                                 {/* Price */}
                                                 <div className="text-right">
                                                     <p className="text-lg font-semibold text-gray-900">
-                                                        {formatPrice(item.price * item.quantity)}đ
+                                                        {formatPrice(item.product_price * item.quantity)}
                                                     </p>
                                                     {item.quantity > 1 && (
-                                                        <p className="text-sm text-gray-500">{formatPrice(item.price)}đ / sản phẩm</p>
+                                                        <p className="text-sm text-gray-500">{formatPrice(item.product_price)} / sản phẩm</p>
                                                     )}
                                                 </div>
                                             </div>
@@ -159,7 +148,7 @@ export default function Cart() {
                                 <div className="space-y-4 mb-6">
                                     <div className="flex justify-between text-gray-600">
                                         <span>Tạm tính</span>
-                                        <span className="font-medium">{formatPrice(subtotal)}đ</span>
+                                        <span className="font-medium">{formatPrice(subtotal)}</span>
                                     </div>
                                     <div className="flex justify-between text-gray-600">
                                         <span>Phí vận chuyển</span>
@@ -175,7 +164,7 @@ export default function Cart() {
                                     <div className="border-t pt-4">
                                         <div className="flex justify-between items-center">
                                             <span className="text-lg font-semibold text-gray-900">Tổng cộng</span>
-                                            <span className="text-2xl font-bold text-gray-900">{formatPrice(total)}đ</span>
+                                            <span className="text-2xl font-bold text-gray-900">{formatPrice(total)}</span>
                                         </div>
                                     </div>
                                 </div>

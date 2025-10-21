@@ -7,6 +7,7 @@ import categoryRouter from './routes/categoryRouter.js';
 import productRouter from './routes/productRouter.js';
 import commentRouter from './routes/commentRouter.js';
 import likeRouter from './routes/likeRouter.js';
+import cartRouter from './routes/cartRouter.js';
 
 const app = express();
 const PORT = 3000;
@@ -54,6 +55,7 @@ app.use('/api/products', productRouter);
 app.use('/api/categories', categoryRouter);
 app.use('/api/comments', commentRouter);
 app.use('/api/like-product', likeRouter);
+app.use('/api/cart', cartRouter);
 
 app.use((req, res) => {
   res.status(404).json({ message: 'Route not found' });
