@@ -42,7 +42,7 @@ export const removeProductFromFavorites = async (req, res) => {
 export const getUserFavorites = async (req, res) => {
     try {
         const { userId } = req.params;
-        const [likedProducts] = await db.query(`select * from liked_products where user_id = ?`, [userId]);
+        const [likedProducts] = await db.query(`select * from liked_products inner join products on products.product_id = liked_products.product_id where user_id = ?`, [userId]);
         res.status(200).json({ likedProducts });
     } catch (error) {
         console.log(error)

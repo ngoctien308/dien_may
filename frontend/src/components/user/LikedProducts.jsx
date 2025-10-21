@@ -3,12 +3,38 @@ import { Link } from "react-router-dom"
 import { Heart, ShoppingCart, Trash2 } from "lucide-react"
 import Header from "./Header"
 import { formatPrice } from "../../utils/functions"
+import { useAuth } from "@clerk/clerk-react"
+import axios from "axios"
+import { toast } from "sonner"
 
 export default function LikedProducts() {
     const [likedItems, setLikedItems] = useState([]);
+    const { userId } = useAuth();
 
-    const removeFromLiked = (id) => {
-        setLikedItems(likedItems.filter((item) => item.id !== id))
+    useEffect(() => {
+        const fetchLikedItems = async () => {
+            try {
+                // Giả sử có API để lấy sản phẩm yêu thích của người dùng
+                const res = await axios.get('http://localhost:3000/api/like-product/user/' + userId);
+                setLikedItems(res.data?.likedProducts);
+                console.log(res.data.likedProducts)
+            } catch (error) {
+                console.error('Lỗi khi tải sản phẩm yêu thích:', error);
+            }
+        }
+
+        fetchLikedItems();
+    }, [userId])
+
+    const removeFromLiked = async (id) => {
+        setLikedItems(likedItems.filter((item) => item.product_id !== id));
+        try {
+            await axios.delete(`http://localhost:3000/api/like-product/product/${id}/user/${userId}`);
+            toast.success('Đã xóa sản phẩm khỏi danh sách yêu thích');
+        } catch (error) {
+            console.log(error);
+            toast.error('Lỗi khi xóa sản phẩm khỏi danh sách yêu thích');
+        }   
     }
 
     const calculateDiscount = (original, current) => {
@@ -54,21 +80,21 @@ export default function LikedProducts() {
                         {/* Liked Items */}
                         <div className="lg:col-span-2 space-y-4">
                             {likedItems.map((item) => (
-                                <div key={item.id} className="bg-white rounded-lg shadow-sm p-4 hover:shadow-md transition-shadow">
+                                <div key={item.product_id} className="bg-white rounded-lg shadow-sm p-4 hover:shadow-md transition-shadow">
                                     <div className="flex gap-4">
                                         {/* Product Image */}
                                         <Link
-                                            to={`/products/${item.id}`}
+                                            to={`/products/${item.product_id}`}
                                             className="relative w-24 h-24 flex-shrink-0 bg-gray-100 rounded-lg overflow-hidden hover:opacity-80 transition-opacity"
                                         >
                                             <img
-                                                src={item.image || "/placeholder.svg"}
-                                                alt={item.name}
+                                                src={item.image1 || "/placeholder.svg"}
+                                                alt={item.product_name}
                                                 className="w-full h-full object-cover"
                                             />
-                                            {item.originalPrice && (
+                                            {item.product_discount && (
                                                 <div className="absolute top-1 left-1 bg-red-500 text-white text-xs font-semibold px-2 py-1 rounded">
-                                                    -{calculateDiscount(item.originalPrice, item.price)}%
+                                                    -{item.product_discount}%
                                                 </div>
                                             )}
                                         </Link>
@@ -81,12 +107,12 @@ export default function LikedProducts() {
                                                         to={`/products/${item.id}`}
                                                         className="font-semibold text-gray-900 hover:text-gray-700 transition-colors"
                                                     >
-                                                        {item.name}
+                                                        {item.product_name}
                                                     </Link>
                                                     <p className="text-sm text-gray-600 mt-1">{item.variant}</p>
                                                 </div>
                                                 <button
-                                                    onClick={() => removeFromLiked(item.id)}
+                                                    onClick={() => removeFromLiked(item.product_id)}
                                                     className="text-gray-400 hover:text-red-500 transition-colors p-1"
                                                     aria-label="Xóa khỏi yêu thích"
                                                 >
@@ -97,9 +123,13 @@ export default function LikedProducts() {
                                             <div className="flex justify-between items-end mt-4">
                                                 {/* Price */}
                                                 <div>
-                                                    <p className="text-lg font-semibold text-gray-900">{formatPrice(item.price)}đ</p>
-                                                    {item.originalPrice && (
-                                                        <p className="text-sm text-gray-500 line-through">{formatPrice(item.originalPrice)}đ</p>
+                                                    <p className="text-lg font-semibold text-gray-900">
+                                                        {
+                                                            formatPrice(item.product_price - (item.product_price * item.product_discount / 100))
+                                                        }
+                                                    </p>
+                                                    {item.product_discount > 0 && (
+                                                        <p className="text-sm text-gray-500 line-through">{formatPrice(item.product_price)}đ</p>
                                                     )}
                                                 </div>
 
@@ -110,7 +140,7 @@ export default function LikedProducts() {
                                                         Thêm giỏ
                                                     </button>
                                                     <Link
-                                                        to={`/products/${item.id}`}
+                                                        to={`/user/products/${item.product_id}`}
                                                         className="px-3 py-2 border border-gray-300 text-gray-900 text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors"
                                                     >
                                                         Chi tiết
@@ -144,38 +174,17 @@ export default function LikedProducts() {
                                         <span>Số sản phẩm</span>
                                         <span className="font-medium">{likedItems.length}</span>
                                     </div>
-                                    <div className="flex justify-between text-gray-600">
-                                        <span>Tổng giá gốc</span>
-                                        <span className="font-medium">
-                                            {formatPrice(likedItems.reduce((sum, item) => sum + (item.originalPrice || item.price), 0))}đ
-                                        </span>
-                                    </div>
-                                    <div className="flex justify-between text-green-600">
-                                        <span>Tiết kiệm được</span>
-                                        <span className="font-medium">
-                                            {formatPrice(
-                                                likedItems.reduce((sum, item) => sum + ((item.originalPrice || item.price) - item.price), 0),
-                                            )}
-                                            đ
-                                        </span>
-                                    </div>
                                     <div className="border-t pt-4">
                                         <div className="flex justify-between items-center">
                                             <span className="text-lg font-semibold text-gray-900">Tổng cộng</span>
                                             <span className="text-2xl font-bold text-gray-900">
-                                                {formatPrice(likedItems.reduce((sum, item) => sum + item.price, 0))}đ
+                                                {formatPrice(likedItems.reduce((sum, item) => sum + Number(item.product_discount > 0
+                                                    ? item.product_price - (item.product_price * item.product_discount / 100)
+                                                    : item.product_price), 0))}
                                             </span>
                                         </div>
                                     </div>
                                 </div>
-
-                                <button className="w-full bg-gray-900 text-white py-3 rounded-lg font-medium hover:bg-gray-800 transition-colors mb-3">
-                                    Thêm tất cả vào giỏ
-                                </button>
-
-                                <button className="w-full border border-gray-300 text-gray-900 py-3 rounded-lg font-medium hover:bg-gray-50 transition-colors">
-                                    Xóa tất cả
-                                </button>
 
                                 {/* Info */}
                                 <div className="mt-6 pt-6 border-t space-y-3 text-sm text-gray-600">
