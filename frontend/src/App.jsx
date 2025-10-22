@@ -8,6 +8,7 @@ import AdminHome from './components/admin/AdminHome'
 import AdminAddProduct from './components/admin/AdminAddProduct'
 import AdminEditProduct from './components/admin/AdminEditProduct'
 import AdminProductDetail from './components/admin/AdminProductDetail'
+import Checkout from './components/user/Checkout'
 
 const App = () => {
   return (
@@ -19,6 +20,7 @@ const App = () => {
       <Route path='/user/products/:id' element={<ProductDetail />} />
       <Route path='/user/cart' element={<Cart />} />
       <Route path='/user/liked-products' element={<LikedProducts />} />
+      <Route path='/user/checkout' element={<Checkout />} />
 
       {/* ADMIN */}
       <Route path="/admin" element={<Navigate to="/admin/home" replace />} />

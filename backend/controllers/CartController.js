@@ -20,11 +20,38 @@ export const addItemToCart = async (req, res) => {
             return res.status(400).json({ error: 'Thiếu thông tin sản phẩm hoặc số lượng' });
         }
 
-        await db.query(`insert into cart (user_id, product_id,quantity,version_id) values (?,?,?,?)`, [userId, productId, quantity, versionId]);
+        const [product] = await db.query(`select * from cart where product_id = ?`, [productId]);
+        if (product.length > 0) {
+            await db.query(`update cart set quantity = quantity + ? where product_id = ?`, [quantity, productId]);
+        }
+        else
+            await db.query(`insert into cart (user_id, product_id,quantity,version_id) values (?,?,?,?)`, [userId, productId, quantity, versionId]);
 
         res.status(201).json({ message: 'Thêm sản phẩm vào giỏ hàng thành công' });
     } catch (error) {
         console.log(error);
         res.status(500).json({ error: 'Lỗi server' });
     }
+};
+
+export const updateCartItemQuantity = async (req, res) => {
+    try {
+        const { cartId } = req.params;
+        const { quantity } = req.body;
+        await db.query(`update cart set quantity = ? where cart_id = ?`, [quantity, cartId]);
+        res.status(200).json({ message: 'Cập nhật số lượng sản phẩm trong giỏ hàng thành công' });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: 'Lỗi server' });
+    }
 }
+
+export const removeCartItemById = async (req, res) => {
+    try {
+        await db.query(`delete from cart where cart_id = ?`, [req.params.cartId]);
+        res.status(200).json({ message: 'Xóa sản phẩm khỏi giỏ hàng thành công' });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: 'Lỗi server' });
+    }
+};

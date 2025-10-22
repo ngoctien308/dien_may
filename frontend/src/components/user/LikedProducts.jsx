@@ -24,7 +24,7 @@ export default function LikedProducts() {
         }
 
         fetchLikedItems();
-    }, [userId])
+    }, [userId]);
 
     const removeFromLiked = async (id) => {
         setLikedItems(likedItems.filter((item) => item.product_id !== id));
@@ -35,11 +35,6 @@ export default function LikedProducts() {
             console.log(error);
             toast.error('Lỗi khi xóa sản phẩm khỏi danh sách yêu thích');
         }   
-    }
-
-    const calculateDiscount = (original, current) => {
-        if (!original) return 0
-        return Math.round(((original - current) / original) * 100)
     }
 
     if (likedItems.length === 0) {
@@ -135,10 +130,6 @@ export default function LikedProducts() {
 
                                                 {/* Action Buttons */}
                                                 <div className="flex gap-2">
-                                                    <button className="flex items-center gap-2 px-3 py-2 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition-colors">
-                                                        <ShoppingCart className="w-4 h-4" />
-                                                        Thêm giỏ
-                                                    </button>
                                                     <Link
                                                         to={`/user/products/${item.product_id}`}
                                                         className="px-3 py-2 border border-gray-300 text-gray-900 text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors"

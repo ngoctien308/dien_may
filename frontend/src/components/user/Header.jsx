@@ -7,22 +7,46 @@ import { useState } from "react";
 
 const Header = () => {
     const { isSignedIn, userId } = useAuth();
-    const categories = ["Điện thoại", "Laptop", "Tablet", "Phụ kiện", "Âm thanh"];
+    const [categories, setCategories] = useState([]);
     const [likedProductsQuantity, setLikedProductsQuantity] = useState(0);
+    const [cartQuantity, setCartQuantity] = useState(0);
 
     useEffect(() => {
         if (isSignedIn && userId) {
             const fetchFavorites = async () => {
                 try {
-                    const res = await axios(`http://localhost:3000/api/like-product/user/${userId}`);                    
+                    const res = await axios(`http://localhost:3000/api/like-product/user/${userId}`);
                     setLikedProductsQuantity(res.data.likedProducts.length);
                 } catch (error) {
                     console.error('Lỗi khi lấy sản phẩm yêu thích:', error);
                 }
             }
             fetchFavorites();
+
+            const fetchCart = async () => {
+                try {
+                    const res = await axios(`http://localhost:3000/api/cart/user/${userId}`);
+                    setCartQuantity(res.data.products.length);
+                } catch (error) {
+                    console.error('Lỗi khi lấy sản phẩm trong giỏ hàng:', error);
+                }
+            };
+
+            fetchCart();
         }
-    }, [isSignedIn, userId]);
+
+        const fetchCategories = async () => {
+            try {
+                const res = await axios.get('http://localhost:3000/api/categories');
+                // Xử lý dữ liệu danh mục nếu cần thiết
+                setCategories(res.data.categories.map(category => category.category_name));
+            } catch (error) {
+                console.error('Lỗi khi lấy danh mục sản phẩm:', error);
+            }
+
+        }
+        fetchCategories();
+    }, []);
 
 
     return (
@@ -56,7 +80,7 @@ const Header = () => {
                     <Link to={'/user/cart'} className="relative flex h-10 w-10 items-center justify-center rounded-lg hover:bg-gray-100 transition-colors">
                         <ShoppingCart className="h-5 w-5 text-gray-700" />
                         <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-gray-900 text-[10px] font-medium text-white">
-                            0
+                            {cartQuantity}
                         </span>
                     </Link>
 

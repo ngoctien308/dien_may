@@ -7,25 +7,54 @@ import { formatPrice } from "../../utils/functions"
 import { useEffect } from "react"
 import axios from "axios"
 import { useAuth } from "@clerk/clerk-react"
+import { toast } from "sonner"
 
 export default function Cart() {
     const { userId } = useAuth();
+    const [cartItems, setCartItems] = useState([]);
 
-    const [cartItems, setCartItems] = useState([])
+    const removeItem = async (cartId) => {
+        setCartItems(cartItems.filter((item) => item.cart_id !== cartId));
 
-    const updateQuantity = (id, newQuantity) => {
-        if (newQuantity < 1) return
-        setCartItems(cartItems.map((item) => (item.id === id ? { ...item, quantity: newQuantity } : item)))
+        try {
+            await axios.delete(`http://localhost:3000/api/cart/${cartId}`);
+            toast.success("Xóa sản phẩm thành công")
+        } catch (error) {
+            toast.error("Xóa sản phẩm thất bại")
+        }
     }
 
-    const removeItem = (id) => {
-        setCartItems(cartItems.filter((item) => item.id !== id))
-    }
+    const increaseQuantity = async (cartId) => {
+        const item = cartItems.find(item => item.cart_id === cartId);
+        await axios.put(`http://localhost:3000/api/cart/${cartId}`, { quantity: item.quantity + 1 });
+        // Logic to increase quantity
+        setCartItems(cartItems.map(item => {
+            if (item.cart_id === cartId) {
+                return { ...item, quantity: item.quantity + 1 };
+            }
+            return item;
+        }))
+    };
+
+    const decreaseQuantity = async (cartId) => {
+        // Logic to increase quantity
+        const item = cartItems.find(item => item.cart_id === cartId);
+        await axios.put(`http://localhost:3000/api/cart/${cartId}`, { quantity: item.quantity - 1 });
+
+        setCartItems(cartItems.map(item => {
+            if (item.cart_id === cartId) {
+                if (item.quantity === 1) removeItem(cartId);
+                else {
+                    return { ...item, quantity: item.quantity - 1 };
+                }
+            }
+            return item;
+        }))
+    };
 
     const subtotal = cartItems.reduce((sum, item) => sum + item.product_price * item.quantity, 0)
     const shipping = subtotal > 500000 ? 0 : 30000
     const total = subtotal + shipping;
-
 
     useEffect(() => {
         const fetchCartItems = async () => {
@@ -41,28 +70,30 @@ export default function Cart() {
 
     if (cartItems.length === 0) {
         return (
-            <div className="min-h-screen bg-gray-50 py-12">
-                <div className="max-w-7xl mx-auto px-4">
-                    <div className="bg-white rounded-lg shadow-sm p-12 text-center">
-                        <svg className="w-24 h-24 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={1.5}
-                                d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
-                            />
-                        </svg>
-                        <h2 className="text-2xl font-semibold text-gray-900 mb-2">Giỏ hàng trống</h2>
-                        <p className="text-gray-600 mb-6">Bạn chưa có sản phẩm nào trong giỏ hàng</p>
-                        <Link
-                            to="/"
-                            className="inline-block bg-gray-900 text-white px-8 py-3 rounded-lg hover:bg-gray-800 transition-colors"
-                        >
-                            Tiếp tục mua sắm
-                        </Link>
+            <>
+                <Header />
+                <div className="min-h-screen bg-gray-50 py-12">
+                    <div className="max-w-7xl mx-auto px-4">
+                        <div className="bg-white rounded-lg shadow-sm p-12 text-center">
+                            <svg className="w-24 h-24 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={1.5}
+                                    d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
+                                />
+                            </svg>
+                            <h2 className="text-2xl font-semibold text-gray-900 mb-2">Giỏ hàng trống</h2>
+                            <p className="text-gray-600 mb-6">Bạn chưa có sản phẩm nào trong giỏ hàng</p>
+                            <Link
+                                to="/"
+                                className="inline-block bg-gray-900 text-white px-8 py-3 rounded-lg hover:bg-gray-800 transition-colors"
+                            >
+                                Tiếp tục mua sắm
+                            </Link>
+                        </div>
                     </div>
-                </div>
-            </div>
+                </div></>
         )
     }
 
@@ -100,7 +131,7 @@ export default function Cart() {
                                                     <p className="text-sm text-gray-600">{item.version_name}</p>
                                                 </div>
                                                 <button
-                                                    onClick={() => removeItem(item.id)}
+                                                    onClick={() => removeItem(item.cart_id)}
                                                     className="text-gray-400 hover:text-red-500 transition-colors p-1"
                                                     aria-label="Xóa sản phẩm"
                                                 >
@@ -111,7 +142,17 @@ export default function Cart() {
                                             </div>
 
                                             <div className="flex justify-between items-center mt-4">
-                                                <span className="text-center font-medium text-gray-900">Số lượng mua: {item.quantity}</span>
+                                                <div className="flex items-center gap-4">
+                                                    <button
+                                                        className="border-2 border-gray-300 px-2 cursor-pointer hover:bg-gray-300 transition"
+                                                        onClick={() => increaseQuantity(item.cart_id)}
+                                                    >+</button>
+                                                    <span className="text-center font-medium text-gray-900">{item.quantity}</span>
+                                                    <button
+                                                        className="border-2 border-gray-300 px-2 cursor-pointer hover:bg-gray-300 transition"
+                                                        onClick={() => decreaseQuantity(item.cart_id)}
+                                                    >-</button>
+                                                </div>
 
                                                 {/* Price */}
                                                 <div className="text-right">
@@ -168,14 +209,11 @@ export default function Cart() {
                                         </div>
                                     </div>
                                 </div>
-
-                                <button className="w-full bg-gray-900 text-white py-3 rounded-lg font-medium hover:bg-gray-800 transition-colors mb-3">
-                                    Thanh toán
-                                </button>
-
-                                <button className="w-full border border-gray-300 text-gray-900 py-3 rounded-lg font-medium hover:bg-gray-50 transition-colors">
-                                    Cập nhật giỏ hàng
-                                </button>
+                                <Link to='/user/checkout'>
+                                    <button className="w-full bg-gray-900 text-white py-3 rounded-lg font-medium hover:bg-gray-800 transition-colors mb-3">
+                                        Thanh toán
+                                    </button>
+                                </Link>
 
                                 {/* Payment Methods */}
                                 <div className="mt-6 pt-6 border-t">

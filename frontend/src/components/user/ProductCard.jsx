@@ -85,13 +85,6 @@ export default function ProductCard({ product }) {
           >
             <Heart className={`h-5 w-5 transition-colors ${isLiked ? "fill-red-500 text-red-500" : "text-gray-600"}`} />
           </button>
-          <button
-            onClick={handleAddToCart}
-            className="flex h-9 w-9 items-center justify-center rounded-full bg-white shadow-md transition-colors hover:bg-gray-50"
-            aria-label="Thêm vào giỏ hàng"
-          >
-            <ShoppingCart className="h-5 w-5 text-gray-600" />
-          </button>
         </div>
       </div>
 
