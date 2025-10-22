@@ -46,15 +46,6 @@ const AdminSidebar = ({ setActiveTab, sidebarOpen, activeTab, setSidebarOpen }) 
                     <MessageSquare className="w-5 h-5 flex-shrink-0" />
                     {sidebarOpen && <span>Bình luận</span>}
                 </button>
-
-                <button
-                    onClick={() => setActiveTab("statistics")}
-                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${activeTab === "statistics" ? "bg-gray-800 text-white" : "text-gray-400 hover:bg-gray-800"
-                        }`}
-                >
-                    <BarChart3 className="w-5 h-5 flex-shrink-0" />
-                    {sidebarOpen && <span>Thống kê</span>}
-                </button>
             </nav>
 
             {/* Logout */}

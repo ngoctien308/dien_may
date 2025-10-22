@@ -3,7 +3,6 @@ import AdminSidebar from "./AdminSidebar"
 import AdminProductsTab from "./AdminProductsTab";
 import AdminCategoriesTab from "./AdminCategoriesTab";
 import AdminCommentsTab from "./AdminCommentsTab";
-import AdminStatisticsTab from "./AdminStatisticsTab";
 
 export default function Admin() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -43,12 +42,7 @@ export default function Admin() {
           {/* Comments Tab */}
           {activeTab === "comments" && (
             <AdminCommentsTab />
-          )}
-
-          {/* Statistics Tab */}
-          {activeTab === "statistics" && (
-            <AdminStatisticsTab />
-          )}
+          )}          
         </div>
       </div>
     </div>
