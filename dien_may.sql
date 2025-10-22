@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th10 19, 2025 lúc 11:03 AM
+-- Thời gian đã tạo: Th10 22, 2025 lúc 06:06 AM
 -- Phiên bản máy phục vụ: 10.4.32-MariaDB
 -- Phiên bản PHP: 8.0.30
 
@@ -32,7 +32,8 @@ CREATE TABLE `cart` (
   `user_id` varchar(100) NOT NULL,
   `product_id` int(11) NOT NULL,
   `quantity` int(11) DEFAULT 1,
-  `added_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `added_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `version_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -78,7 +79,8 @@ CREATE TABLE `comments` (
 INSERT INTO `comments` (`comment_id`, `comment_content`, `comment_rating`, `user_id`, `product_id`, `created_at`) VALUES
 (4, 'KOKOK', 5, 'user_34669WZ8c9zAyTK618AmrMtPIkT', 14, '2025-10-19 08:45:20'),
 (5, 'OK', 5, 'user_34669WZ8c9zAyTK618AmrMtPIkT', 12, '2025-10-19 08:46:41'),
-(6, 'spam à', 3, 'user_34669WZ8c9zAyTK618AmrMtPIkT', 12, '2025-10-19 08:46:45');
+(7, 'Tam duoc', 4, 'user_34669WZ8c9zAyTK618AmrMtPIkT', 12, '2025-10-20 07:10:36'),
+(9, 'tệ', 1, 'user_34669WZ8c9zAyTK618AmrMtPIkT', 14, '2025-10-20 07:24:24');
 
 -- --------------------------------------------------------
 
@@ -93,6 +95,13 @@ CREATE TABLE `liked_products` (
   `liked_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Đang đổ dữ liệu cho bảng `liked_products`
+--
+
+INSERT INTO `liked_products` (`like_id`, `user_id`, `product_id`, `liked_at`) VALUES
+(16, 'user_34669WZ8c9zAyTK618AmrMtPIkT', 12, '2025-10-21 13:46:46');
+
 -- --------------------------------------------------------
 
 --
@@ -102,7 +111,7 @@ CREATE TABLE `liked_products` (
 CREATE TABLE `products` (
   `product_id` int(11) NOT NULL,
   `product_name` varchar(255) NOT NULL,
-  `product_price` decimal(10,2) NOT NULL,
+  `product_price` int(11) NOT NULL,
   `product_discount` int(11) DEFAULT 0,
   `specifications` text DEFAULT NULL,
   `description` varchar(500) NOT NULL,
@@ -117,8 +126,8 @@ CREATE TABLE `products` (
 --
 
 INSERT INTO `products` (`product_id`, `product_name`, `product_price`, `product_discount`, `specifications`, `description`, `category_id`, `image1`, `image2`, `image3`) VALUES
-(12, 'Điện thoại Samsung Galaxy S25 Plus', 20900000.00, 10, 'Độ phân giải camera:Camera siêu rộng 12MP,Bộ nhớ trong:256GB,Mạng di động:5G,Số khe SIM:2 nano SIM + Esim,Hệ điều hành:Android 15', 'Samsung Galaxy S25 Plus là một trong những mẫu flagship mới nhất năm 2025 của Samsung, mang đến sự nâng cấp toàn diện từ thiết kế, màn hình, hiệu năng, camera đến công nghệ AI thông minh. Với những cải tiến đáng giá, Galaxy S25 Plus hứa hẹn sẽ là lựa chọn hoàn hảo cho những ai tìm kiếm một chiếc smartphone mạnh mẽ, thời thượng và đa năng. Galaxy S25 Plus sở hữu màn hình Dynamic AMOLED 2X 6.7 inch với độ phân giải QHD+ (3120 x 1440 pixels), hỗ trợ tần số quét 120Hz và độ sáng lên đến 2600 nits, m', 1, 'http://localhost:3000/uploads/1760765431943-samsungs25.jpg', 'http://localhost:3000/uploads/1760765431947-samsung25-2.jpg', 'http://localhost:3000/uploads/1760765431948-sss25-3.jpg'),
-(14, 'Màn hình Edra EGM27F100H (27 inch/FHD/IPS/100Hz/1ms) - Chính hãng', 1984000.00, 0, 'Kích thước màn hình:27 inch,Độ phân giải:Full HD (1920x1080),Tấm nền:IPS,Độ sáng:250 cd/m²', 'Màn hình Edra EGM27F100H là một trong những màn hình tầm trung được thiết kế để đáp ứng nhu cầu của nhiều đối tượng khách hàng, từ nhân viên văn phòng đến game thủ phổ thông. Với kích thước 27 inch, độ phân giải Full HD (1920x1080) và tấm nền IPS, màn hình này mang đến hình ảnh sắc nét, màu sắc trung thực cùng góc nhìn rộng. Bên cạnh đó, tần số quét 100Hz giúp hình ảnh hiển thị mượt mà hơn, hỗ trợ tốt cho các tác vụ đồ họa nhẹ hoặc chơi game giải trí.', 5, 'http://localhost:3000/uploads/1760860164597-man1.jpg', 'http://localhost:3000/uploads/1760860164598-man2.jpg', 'http://localhost:3000/uploads/1760860164600-man3.jpg');
+(12, 'Điện thoại Samsung Galaxy S25 Plus', 20900000, 10, 'Độ phân giải camera:Camera siêu rộng 12MP,Bộ nhớ trong:256GB,Mạng di động:5G,Số khe SIM:2 nano SIM + Esim,Hệ điều hành:Android 15', 'Samsung Galaxy S25 Plus là một trong những mẫu flagship mới nhất năm 2025 của Samsung, mang đến sự nâng cấp toàn diện từ thiết kế, màn hình, hiệu năng, camera đến công nghệ AI thông minh. Với những cải tiến đáng giá, Galaxy S25 Plus hứa hẹn sẽ là lựa chọn hoàn hảo cho những ai tìm kiếm một chiếc smartphone mạnh mẽ, thời thượng và đa năng. Galaxy S25 Plus sở hữu màn hình Dynamic AMOLED 2X 6.7 inch với độ phân giải QHD+ (3120 x 1440 pixels), hỗ trợ tần số quét 120Hz và độ sáng lên đến 2600 nits, m', 1, 'http://localhost:3000/uploads/1760765431943-samsungs25.jpg', 'http://localhost:3000/uploads/1760765431947-samsung25-2.jpg', 'http://localhost:3000/uploads/1761105860945-sss25-3.jpg'),
+(14, 'Màn hình Edra EGM27F100H (27 inch/FHD/IPS/100Hz/1ms) - Chính hãng', 1984000, 0, 'Kích thước màn hình:27 inch,Độ phân giải:Full HD (1920x1080),Tấm nền:IPS,Độ sáng:250 cd/m²', 'Màn hình Edra EGM27F100H là một trong những màn hình tầm trung được thiết kế để đáp ứng nhu cầu của nhiều đối tượng khách hàng, từ nhân viên văn phòng đến game thủ phổ thông. Với kích thước 27 inch, độ phân giải Full HD (1920x1080) và tấm nền IPS, màn hình này mang đến hình ảnh sắc nét, màu sắc trung thực cùng góc nhìn rộng. Bên cạnh đó, tần số quét 100Hz giúp hình ảnh hiển thị mượt mà hơn, hỗ trợ tốt cho các tác vụ đồ họa nhẹ hoặc chơi game giải trí.', 5, 'http://localhost:3000/uploads/1760860164597-man1.jpg', 'http://localhost:3000/uploads/1760860164598-man2.jpg', 'http://localhost:3000/uploads/1760860164600-man3.jpg');
 
 -- --------------------------------------------------------
 
@@ -137,10 +146,10 @@ CREATE TABLE `product_versions` (
 --
 
 INSERT INTO `product_versions` (`version_id`, `product_id`, `version_name`) VALUES
-(24, 12, 'Xanh dương đậm'),
-(25, 12, 'Xanh lá'),
-(26, 12, 'Xanh da trời'),
-(28, 14, 'Đen');
+(28, 14, 'Đen'),
+(32, 12, 'Xanh dương đậm'),
+(33, 12, 'Xanh lá'),
+(34, 12, 'Xanh da trời');
 
 --
 -- Chỉ mục cho các bảng đã đổ
@@ -151,7 +160,8 @@ INSERT INTO `product_versions` (`version_id`, `product_id`, `version_name`) VALU
 --
 ALTER TABLE `cart`
   ADD PRIMARY KEY (`cart_id`),
-  ADD KEY `product_id` (`product_id`);
+  ADD KEY `product_id` (`product_id`),
+  ADD KEY `fk_cart_version` (`version_id`);
 
 --
 -- Chỉ mục cho bảng `categories`
@@ -196,7 +206,7 @@ ALTER TABLE `product_versions`
 -- AUTO_INCREMENT cho bảng `cart`
 --
 ALTER TABLE `cart`
-  MODIFY `cart_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `cart_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT cho bảng `categories`
@@ -208,13 +218,13 @@ ALTER TABLE `categories`
 -- AUTO_INCREMENT cho bảng `comments`
 --
 ALTER TABLE `comments`
-  MODIFY `comment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `comment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT cho bảng `liked_products`
 --
 ALTER TABLE `liked_products`
-  MODIFY `like_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `like_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT cho bảng `products`
@@ -226,7 +236,7 @@ ALTER TABLE `products`
 -- AUTO_INCREMENT cho bảng `product_versions`
 --
 ALTER TABLE `product_versions`
-  MODIFY `version_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
+  MODIFY `version_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
 
 --
 -- Các ràng buộc cho các bảng đã đổ
@@ -236,7 +246,8 @@ ALTER TABLE `product_versions`
 -- Các ràng buộc cho bảng `cart`
 --
 ALTER TABLE `cart`
-  ADD CONSTRAINT `cart_ibfk_1` FOREIGN KEY (`product_id`) REFERENCES `products` (`product_id`) ON DELETE CASCADE;
+  ADD CONSTRAINT `cart_ibfk_1` FOREIGN KEY (`product_id`) REFERENCES `products` (`product_id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_cart_version` FOREIGN KEY (`version_id`) REFERENCES `product_versions` (`version_id`) ON DELETE CASCADE;
 
 --
 -- Các ràng buộc cho bảng `comments`
