@@ -228,9 +228,6 @@ export default function ProductDetailPage() {
                 <ShoppingCart className="mr-2 inline-block h-5 w-5" />
                 Thêm vào giỏ hàng
               </button>
-              <button className="rounded-lg bg-red-500 px-6 py-3 font-semibold text-white transition-colors hover:bg-red-600">
-                Đặt hàng ngay
-              </button>
               <button
                 onClick={() => {
                   setIsLiked(!isLiked)
