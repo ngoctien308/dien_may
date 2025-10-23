@@ -10,12 +10,32 @@ const AdminCommentsTab = () => {
   const [filterRating, setFilterRating] = useState("all")
   const [filteredComments, setFilteredComments] = useState([])
   const [deleteConfirm, setDeleteConfirm] = useState({ show: false, comment: null })
-  const [stats, setStats] = useState(null)
+  const [stats, setStats] = useState(null);
+  const [users, setUsers] = useState({});
+
+  const fetchUser = async (userId) => {
+    if (users[userId]) return users[userId]; // tránh gọi lại
+
+    try {
+      const res = await axios.get(`http://localhost:3000/api/users/${userId}`);
+      const name = res.data.user.name;
+      const imgUrl = res.data.user.imgUrl;
+
+      setUsers(prev => ({ ...prev, [userId]: { name, imgUrl } }));
+    } catch (error) {
+      console.error("Error fetching user name:", error);
+      setUsers(prev => ({ ...prev, [userId]: "Người dùng" }));
+    }
+  };
 
   useEffect(() => {
     fetchComments()
     fetchStats()
   }, [])
+
+  useEffect(() => {
+    comments.forEach(c => fetchUser(c.user_id));
+  }, [comments]);
 
   useEffect(() => {
     filterComments()
@@ -94,8 +114,8 @@ const AdminCommentsTab = () => {
           <Star
             key={star}
             className={`w-4 h-4 ${star <= rating
-                ? 'text-yellow-400 fill-current'
-                : 'text-gray-300'
+              ? 'text-yellow-400 fill-current'
+              : 'text-gray-300'
               }`}
           />
         ))}
@@ -230,13 +250,21 @@ const AdminCommentsTab = () => {
               <div key={comment.comment_id} className="p-6 hover:bg-gray-50 transition-colors">
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
-                      <span className="text-gray-600 font-medium text-sm">
-                        {comment.user_id?.charAt(0).toUpperCase()}
-                      </span>
+                    <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center">
+                      {users[comment.user_id]?.imgUrl ? (
+                        <img
+                          src={users[comment.user_id].imgUrl}
+                          alt={users[comment.user_id].name}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <span className="text-gray-600 font-medium text-sm">
+                          {users[comment.user_id]?.name?.charAt(0).toUpperCase() || "?"}
+                        </span>
+                      )}
                     </div>
                     <div>
-                      <h4 className="font-medium text-gray-900">User {comment.user_id?.slice(-4)}</h4>
+                      <h4 className="font-medium text-gray-900">{users[comment.user_id]?.name || "Đang tải..."}</h4>
                       <p className="text-sm text-gray-500">{formatDate(comment.created_at)}</p>
                     </div>
                   </div>

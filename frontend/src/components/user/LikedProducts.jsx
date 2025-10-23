@@ -17,7 +17,6 @@ export default function LikedProducts() {
                 // Giả sử có API để lấy sản phẩm yêu thích của người dùng
                 const res = await axios.get('http://localhost:3000/api/like-product/user/' + userId);
                 setLikedItems(res.data?.likedProducts);
-                console.log(res.data.likedProducts)
             } catch (error) {
                 console.error('Lỗi khi tải sản phẩm yêu thích:', error);
             }

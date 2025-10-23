@@ -55,10 +55,7 @@ const Header = () => {
                 {/* LOGO */}
                 <div className="flex items-center gap-8">
                     <Link to={'/user/home'} className="flex items-center gap-2">
-                        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gray-900 text-white font-bold text-lg">
-                            L
-                        </div>
-                        <span className="hidden font-semibold text-lg text-gray-900 sm:inline-block">Logo</span>
+                        <img src="/logo.svg" alt="logo" className="w-10 h-10 rounded-full" />
                     </Link>
                 </div>
 

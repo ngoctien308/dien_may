@@ -26,7 +26,6 @@ export default function Checkout() {
   useEffect(() => {
     const fetchProductsInCart = async () => {      
       const res = await axios.get(`http://localhost:3000/api/cart/user/${userId}`);
-      console.log(res.data.products)
       setCartItems(res.data.products);
     };
 
