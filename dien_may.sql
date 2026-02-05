@@ -132,6 +132,27 @@ INSERT INTO `products` (`product_id`, `product_name`, `product_price`, `product_
 -- --------------------------------------------------------
 
 --
+-- Cấu trúc bảng cho bảng `admins`
+--
+
+CREATE TABLE `admins` (
+  `admin_id` int(11) NOT NULL,
+  `admin_username` varchar(100) NOT NULL,
+  `admin_password` varchar(255) NOT NULL,
+  `admin_name` varchar(255) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `admins`
+--
+
+INSERT INTO `admins` (`admin_id`, `admin_username`, `admin_password`, `admin_name`, `created_at`) VALUES
+(1, 'admin', '$2b$10$rb3LLJRkmj4uHwlGPdVMJO2kJNlGlg/qxQ1mEyj14w0qj7VrHZ0.e', 'Administrator', '2025-01-01 00:00:00');
+
+-- --------------------------------------------------------
+
+--
 -- Cấu trúc bảng cho bảng `product_versions`
 --
 
@@ -192,6 +213,13 @@ ALTER TABLE `products`
   ADD KEY `products_category_fk` (`category_id`);
 
 --
+-- Chỉ mục cho bảng `admins`
+--
+ALTER TABLE `admins`
+  ADD PRIMARY KEY (`admin_id`),
+  ADD UNIQUE KEY `admin_username` (`admin_username`);
+
+--
 -- Chỉ mục cho bảng `product_versions`
 --
 ALTER TABLE `product_versions`
@@ -231,6 +259,12 @@ ALTER TABLE `liked_products`
 --
 ALTER TABLE `products`
   MODIFY `product_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+
+--
+-- AUTO_INCREMENT cho bảng `admins`
+--
+ALTER TABLE `admins`
+  MODIFY `admin_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT cho bảng `product_versions`

@@ -4,6 +4,8 @@ import Home from './components/user/Home'
 import ProductDetail from './components/user/ProductDetail'
 import Cart from './components/user/Cart'
 import LikedProducts from './components/user/LikedProducts'
+import AdminSignIn from './components/admin/AdminSignIn'
+import ProtectedRoute from './components/admin/ProtectedRoute'
 import AdminHome from './components/admin/AdminHome'
 import AdminAddProduct from './components/admin/AdminAddProduct'
 import AdminEditProduct from './components/admin/AdminEditProduct'
@@ -24,10 +26,11 @@ const App = () => {
 
       {/* ADMIN */}
       <Route path="/admin" element={<Navigate to="/admin/home" replace />} />
-      <Route path='/admin/home' element={<AdminHome />} />
-      <Route path='/admin/add-product' element={<AdminAddProduct />} />
-      <Route path='/admin/edit-product/:productId' element={<AdminEditProduct />} />
-      <Route path='/admin/product-detail/:productId' element={<AdminProductDetail />} />
+      <Route path='/admin/signin' element={<AdminSignIn />} />
+      <Route path='/admin/home' element={<ProtectedRoute><AdminHome /></ProtectedRoute>} />
+      <Route path='/admin/add-product' element={<ProtectedRoute><AdminAddProduct /></ProtectedRoute>} />
+      <Route path='/admin/edit-product/:productId' element={<ProtectedRoute><AdminEditProduct /></ProtectedRoute>} />
+      <Route path='/admin/product-detail/:productId' element={<ProtectedRoute><AdminProductDetail /></ProtectedRoute>} />
 
       {/* Bất kỳ đường dẫn nào khác → quay về /user */}
       <Route path="*" element={<Navigate to="/user" replace />} />

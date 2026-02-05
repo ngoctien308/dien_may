@@ -60,7 +60,7 @@ const Header = () => {
                 </div>
 
                 {/* SEARCH INPUT */}
-                <div className="flex-1 max-w-md mx-4 md:mx-8">
+                {/* <div className="flex-1 max-w-md mx-4 md:mx-8">
                     <div className="relative">
                         <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
                         <input
@@ -69,7 +69,7 @@ const Header = () => {
                             className="w-full h-10 pl-10 pr-4 text-sm bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all placeholder:text-gray-400"
                         />
                     </div>
-                </div>
+                </div> */}
 
                 {/* CART & AUTH */}
                 <div className="flex items-center gap-3">

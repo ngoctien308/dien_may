@@ -20,6 +20,7 @@ export default function ProductDetailPage() {
   const [isLiked, setIsLiked] = useState(false);
   const [activeTab, setActiveTab] = useState("details");
   const [selectedVersion, setSelectedVersion] = useState(0);
+  const [comments, setComments] = useState([]);
 
   const handleChangeVersion = (version_id) => {
     setSelectedVersion(version_id);
@@ -85,9 +86,9 @@ export default function ProductDetailPage() {
     });
   }
 
-  const handleAddToCart = async () => {        
+  const handleAddToCart = async () => {
     try {
-      await axios.post(`http://localhost:3000/api/cart/user/${userId}`, {        
+      await axios.post(`http://localhost:3000/api/cart/user/${userId}`, {
         productId: product.product_id,
         quantity, versionId: selectedVersion
       });
@@ -97,6 +98,27 @@ export default function ProductDetailPage() {
       console.log(error)
     }
   }
+
+  useEffect(() => {
+    const fetchComments = async () => {
+      const res = await axios.get('http://localhost:3000/api/comments/product/' + id);
+      setComments(res.data.comments);
+    };
+
+    fetchComments();
+  }, []);
+
+  const getAverageRating = (comments) => {
+    if (!comments || comments.length === 0) return 0;
+
+    const validComments = comments.filter(c => c.comment_rating && c.comment_rating > 0);
+    if (validComments.length === 0) return 0;
+
+    const total = validComments.reduce((sum, c) => sum + Number(c.comment_rating), 0);
+    const average = total / validComments.length;
+
+    return average.toFixed(1); // làm tròn 1 chữ số thập phân, ví dụ 4.2
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -150,12 +172,14 @@ export default function ProductDetailPage() {
                   {[...Array(5)].map((_, i) => (
                     <Star
                       key={i}
-                      className={`h-5 w-5 ${i < Math.floor(4.0) ? "fill-yellow-400 text-yellow-400" : "text-gray-300"
+                      className={`h-5 w-5 ${i < Math.round(getAverageRating(comments))
+                          ? "fill-yellow-400 text-yellow-400"
+                          : "text-gray-300"
                         }`}
                     />
                   ))}
                   <span className="ml-2 text-sm text-gray-600">
-                    {4.0} (1000 đánh giá)
+                    {getAverageRating(comments)} ({comments.length} đánh giá)
                   </span>
                 </div>
               </div>

@@ -9,6 +9,7 @@ import commentRouter from './routes/commentRouter.js';
 import likeRouter from './routes/likeRouter.js';
 import cartRouter from './routes/cartRouter.js';
 import userRouter from './routes/userRouter.js';
+import adminRouter from './routes/adminRouter.js';
 
 const app = express();
 const PORT = 3000;
@@ -57,7 +58,8 @@ app.use('/api/categories', categoryRouter);
 app.use('/api/comments', commentRouter);
 app.use('/api/like-product', likeRouter);
 app.use('/api/cart', cartRouter);
-app.use('/api/users', userRouter)
+app.use('/api/users', userRouter);
+app.use('/api/admin', adminRouter);
 
 app.use((req, res) => {
   res.status(404).json({ message: 'Route not found' });
